@@ -12,18 +12,18 @@ let caso1 = "= 1 + - 2A"
 
 // array1 normal deberia devolver lo mismo
 let array1 =  [["= 2","2"],
-              [3,"=A2 +  A1"],
+              [3,"= - A2 +  A1"],
               [5, "= -1 -1"]]
 console.log(array1)
 
 // array2 anormal deberia tirar error
-let array2 =  [[1,2],
-              [2,"=A2"],
-              [2, "=+2"]]
+let array2 =  [["=-1","2"],
+              [2,"=10 / 2"],
+              ]
 
 
 let array3 =  [[1,3],
-              [3,"= A1 +2"]]
+              [3,"= A4 +2"]]
 
 
 // esta funcion puede recibir una matriz asi [[1,2],
@@ -185,47 +185,130 @@ function resolverOperacion(matriz, operaciones){
   console.log(matriz)
   console.log(operaciones)
   let operaciones2 = []
-  // for (let i = 0; i < operaciones.positionGood.length; i++) {
-  //     console.log(operaciones.positionGood[i])
-    
-    
-  // }
-  
-  
-  
-  for (let i = 0; i < operaciones.resolver.length; i++) {
-      let caso1 =operaciones.resolver[i].replace(/\s+/g, '').replace("=","")
-      let caso2 = Number(caso1)
-      if(!isNaN(caso2)){
-        operaciones2.push(caso2)
-        continue
+
+  for(x=0;x<matriz.length;x++){
+    for(y=0;y<matriz[x].length;y++){
+      if(typeof matriz[x][y] === "string"){
+        let caso1 = matriz[x][y].replace(/\s+/g, '').replace("=","")
+        let caso2 = Number(caso1)
+        if(!isNaN(caso2)){
+          matriz[x][y] = caso2
+        }
+        else {
+          console.log(matriz[x][y])
+          let operadorMatematico = buscarOperadores(matriz[x][y])
+          let ecuacion = matriz[x][y].replace(/\s+/g, '').replace("=","")
+          // console.log(operadorMatematico)
+           let stringEnDos =(ecuacion.split(operadorMatematico))
+           console.log(stringEnDos)
+           if(stringEnDos[0] === ""){
+            console.log("bien")
+           }else {
+            
+            console.log("Paso 2  desarmar de nuevo") 
+            console.log(stringEnDos[0]);  
+            console.log(stringEnDos[0].slice(1));  
+
+            let indentificadoColumna = stringEnDos[0][0];
+            let indentificadoFila = stringEnDos[0].slice(1);
+            let operacion = operadorMatematico
+            let operando = stringEnDos[1];
+            console.log(indentificadoColumna)
+            console.log(indentificadoFila)
+            console.log(operacion)
+            let indentificadoColumnaInt = indentificadoColumna.toUpperCase().charCodeAt() - 65
+            let indeindentificadoFilaInt = (parseInt(indentificadoFila) - 1)
+
+            console.log(indeindentificadoFilaInt)
+            console.log(indentificadoColumnaInt)
+           }
+
+          // console.log("retiramos el igual y los espacios en la ecuacion")
+          // console.log("ecuacion", ecuacion)
+
+          
+        }
       }
-      function resolverFinal(){
-        let saludo = "hola"
-         
-        return saludo
-      }
-       operaciones2.push(resolverFinal())
     }
-    console.log("operaciones desp de cortarle los espacios",operaciones2)
+  }
+ console.log(matriz)
+
+  // for (let i = 0; i < operaciones.resolver.length; i++) {
+  //     let caso1 =operaciones.resolver[i].replace(/\s+/g, '').replace("=","")
+  //     let caso2 = Number(caso1)
+  //     if(!isNaN(caso2)){
+  //       operaciones2.push(caso2)
+  //       continue
+  //     }
+  //     function resolverFinal(){
+  //       let saludo = "hola"
+         
+  //       return saludo
+  //     }
+  //      operaciones2.push(resolverFinal())
+  //   }
+  //   console.log("operaciones desp de cortarle los espacios",operaciones2)
     
     
     
-    function buscarOperadores(operaciones){
+    // function buscarOperadores(operaciones){
       
-      if(operaciones[i].match(expresion1)){
+    //   if(operaciones[i].match(expresion1)){
+    //     let oper = [" + "," - "," / "," * ","*","/","-","+",]
+    //     let result= "";
+    //     let i = 0;
+    //     let encontrado = false;
+    //     let indexSimbol= -1;
+    //     while(!encontrado && i < 8){
+    //       console.log(operacion)
+    //       encontrado = operacion.includes(oper[i])
+    //       console.log(oper[i])
+    //         if(encontrado) indexSimbol = i;
+    //         i++
+    //       }
+    //       return oper[indexSimbol]
+          
+    //     }else{
+    //       let oper = [" + "," - "," / "," * "]
+    //       let result= "";
+    //       let i = 0;
+    //       let encontrado = false;
+    //       let indexSimbol= -1;
+    //       while(!encontrado && i < 8){
+            
+    //         encontrado = operacion.includes(oper[i])
+    //         console.log(oper[i])
+    //         if(encontrado) indexSimbol = i;
+    //         i++
+    //       }
+    //       return oper[indexSimbol].trim()
+          
+          
+    //     }
+        
+        
+        
+    //   }
+      
+      //  let operacionTest = "= B42 + -2";
+       function buscarOperadores(stringBase){
+        console.log(stringBase)
+         if(stringBase.match(expresion1)){
+          console.log("entro a con la primera exprecion regular")
         let oper = [" + "," - "," / "," * ","*","/","-","+",]
         let result= "";
         let i = 0;
         let encontrado = false;
         let indexSimbol= -1;
         while(!encontrado && i < 8){
-          console.log(operacion)
-          encontrado = operacion.includes(oper[i])
+          console.log(stringBase)
+          encontrado = stringBase.includes(oper[i])
           console.log(oper[i])
             if(encontrado) indexSimbol = i;
+            console.log(encontrado)
             i++
           }
+          console.log(oper[indexSimbol])
           return oper[indexSimbol]
           
         }else{
@@ -236,7 +319,7 @@ function resolverOperacion(matriz, operaciones){
           let indexSimbol= -1;
           while(!encontrado && i < 8){
             
-            encontrado = operacion.includes(oper[i])
+            encontrado = stringBase.includes(oper[i])
             console.log(oper[i])
             if(encontrado) indexSimbol = i;
             i++
@@ -249,27 +332,7 @@ function resolverOperacion(matriz, operaciones){
         
         
       }
-      
-      //  let operacionTest = "= B42 + -2";
-      //  function buscarOperadores(stringBase){
-        //      let oper = [" + "," - "," / "," * "]
-        //      let result = "";
-        //      let i = 0;
-        //      let encontrado = false;
-        //      let indexSimbol = -1;
-        //      while(!encontrado && i < 4){
-          //          encontrado = stringBase.includes(oper[i])
-          //          if(encontrado) indexSimbol = i;
-          //          i++;
-          //      }
-          //      return oper[indexSimbol].trim();
-          //  }
-          
-          
-          //  //console.log(buscarOperadores(operacionTest));
-        
-
-}
+    }
 
 console.log(evaluate(array2))
 
