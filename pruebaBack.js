@@ -4,6 +4,7 @@ let expresion1 = /^\=( *?\d+| *?[+] *?\d+| *?[-]\d+| *?[-*/+]?[a-zA-Z]+\d+| *?[*
 
 let expresion2 = /^\=( *?\d+| *?[+] *?\d+| *?[-]\d+| *?[-*/+]?[a-zA-Z]+\d+| *?[*/+]? *?[a-zA-Z]\d+)( *?[-/*+] *?)(\d+|[-]\d+|[a-zA-Z]+\d+|[-][a-zA-Z]+\d+)$/g
 
+let expresion3 = /^(\-)?(\d+[+*/][-]?\d+|\d+[-]\d+)$/
 
 let caso1 = "= 1 + - 2A"
 
@@ -12,14 +13,12 @@ let caso1 = "= 1 + - 2A"
 
 // array1 normal deberia devolver lo mismo
 let array1 =  [["= 2","2"],
-              [3,"= - A2 +  A1"],
+              [3,"= -A2 +  A1"],
               [5, "= -1 -1"]]
 console.log(array1)
 
 // array2 anormal deberia tirar error
-let array2 =  [["=-1","2"],
-              [2,"=10 / 2"],
-              ]
+let array2 =  [ [ 1, "=A1 - 1", "=A1 / B1" ] ]
 
 
 let array3 =  [[1,3],
@@ -54,7 +53,8 @@ function evaluate (m) {
           let response3 = ecuacionValid(m,expresion1,expresion2)
             if(response3.fallos === 0){
               let response4 = resolverOperacion(m,response3)
-
+              console.log("respuesta final",response4)
+                  return response4
             }else{
               return response3
             }
@@ -198,30 +198,67 @@ function resolverOperacion(matriz, operaciones){
           console.log(matriz[x][y])
           let operadorMatematico = buscarOperadores(matriz[x][y])
           let ecuacion = matriz[x][y].replace(/\s+/g, '').replace("=","")
-          // console.log(operadorMatematico)
-           let stringEnDos =(ecuacion.split(operadorMatematico))
-           console.log(stringEnDos)
-           if(stringEnDos[0] === ""){
-            console.log("bien")
-           }else {
+
+          console.log(ecuacion)
+          let stringEnDos =(ecuacion.split(operadorMatematico))
+          console.log("string en 2",stringEnDos)
+
+           if(!ecuacion.match(expresion3)){
+              if(stringEnDos[0] === ""){
+                console.log("bien")
+              }else {
+                 for (let i = 0; i < stringEnDos.length; i++) {
+                    let case3 = Number(stringEnDos[i])
+                    if(!isNaN(case3)){
+                     continue
+                    }else{
+                      console.log("string no num",stringEnDos[i])
+
+                      console.log("Paso 2  desarmar de nuevo") 
+                      // console.log(stringEnDos[0]);  
+                      // console.log(stringEnDos[0].slice(1));  
+      
+                      
+      
+                      let indentificadoColumna = stringEnDos[i][0];
+                      let indentificadoFila = stringEnDos[i].slice(1);
+                      let operando = stringEnDos[1];
+
+                      console.log(indentificadoColumna)
+                      console.log(indentificadoFila)
+                      let indentificadoColumnaInt = indentificadoColumna.toUpperCase().charCodeAt() - 65
+                      let indeindentificadoFilaInt = (parseInt(indentificadoFila) - 1)
+                      console.log("stringEnDos", stringEnDos[i])
+
+                      stringEnDos[i] = matriz[indentificadoColumnaInt][indeindentificadoFilaInt]
+
+                      console.log(stringEnDos)
+                      console.log(indeindentificadoFilaInt)
+                      console.log(indentificadoColumnaInt)
+                      
+                      let response5 = resol(stringEnDos, operadorMatematico)
+                      if(response5.mensaje === ""){
+                        matriz[x][y] = response5.result
+                      } else{
+                        return  response5.mensaje
+                      }
+                    }
+                  
+                 }
+                
+               
+              }
+          } else {
+            let response5 = resol(stringEnDos,operadorMatematico)
+              if(response5.mensaje === ""){
+                matriz[x][y] = response5.result
+              } else{
+                return  response5.mensaje
+              }
             
-            console.log("Paso 2  desarmar de nuevo") 
-            console.log(stringEnDos[0]);  
-            console.log(stringEnDos[0].slice(1));  
-
-            let indentificadoColumna = stringEnDos[0][0];
-            let indentificadoFila = stringEnDos[0].slice(1);
-            let operacion = operadorMatematico
-            let operando = stringEnDos[1];
-            console.log(indentificadoColumna)
-            console.log(indentificadoFila)
-            console.log(operacion)
-            let indentificadoColumnaInt = indentificadoColumna.toUpperCase().charCodeAt() - 65
-            let indeindentificadoFilaInt = (parseInt(indentificadoFila) - 1)
-
-            console.log(indeindentificadoFilaInt)
-            console.log(indentificadoColumnaInt)
-           }
+          }
+          // console.log(operadorMatematico)
+          
 
           // console.log("retiramos el igual y los espacios en la ecuacion")
           // console.log("ecuacion", ecuacion)
@@ -232,6 +269,38 @@ function resolverOperacion(matriz, operaciones){
     }
   }
  console.log(matriz)
+
+ function resol(stringEnDos,operadorMatematico){
+    let objet = {
+      result: 0,
+      mensaje: ""
+    }
+    let parteAInt = Number(stringEnDos[0])
+    let parteBInt = Number(stringEnDos[1])
+
+    switch (operadorMatematico) {
+      case "/":
+          if(parteAInt === 0 || parteBInt === 0){
+            objet.mensaje = "ZeroDivisionError: la divicion esta hecha por 0"
+            
+          }
+          objet.result = parteAInt / parteBInt
+        break;
+      case "+":
+        objet.result = parteAInt + parteBInt
+        break
+      case "-":
+        objet.result = parteAInt - parteBInt
+        break
+      case "*":
+        objet.result = parteAInt * parteBInt
+        break
+      default:
+        break;
+    }
+
+    return objet
+ }
 
   // for (let i = 0; i < operaciones.resolver.length; i++) {
   //     let caso1 =operaciones.resolver[i].replace(/\s+/g, '').replace("=","")
@@ -332,6 +401,7 @@ function resolverOperacion(matriz, operaciones){
         
         
       }
+      return matriz
     }
 
 console.log(evaluate(array2))
